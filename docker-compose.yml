@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  logic64-core:
+    container_name: logic64-core
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - GOVERNANCE_MODE=strict
+      - MCP_SERVER_NAME=logic64-vps-primary
+    volumes:
+      # Mount logs for host access
+      - ./logs:/app/logs
+      # Optional: Mount docs for live updates without rebuild
+      - ./MCP-Core:/app/MCP-Core:ro
+      - ./MCP-Decision-System:/app/MCP-Decision-System:ro
+    restart: unless-stopped
+    networks:
+      - logic64-net
+
+networks:
+  logic64-net:
+    driver: bridge

@@ -1,0 +1,10 @@
+{
+  "version": "2.1",
+  "timestamp": "2026-01-20T10:00:00Z",
+  "state_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "files": {
+    "blueprint.md": "a1b2c3d4...",
+    "constraints.json": "f5e6d7c8..."
+  },
+  "signature": "LOGIC64-SIG-EXAMPLE"
+}

@@ -1,0 +1,18 @@
+{
+    "architecture_style": "microservices",
+    "technology_stack": {
+        "language": "python",
+        "framework": "fastapi",
+        "database": "postgresql"
+    },
+    "security_rules": [
+        "no_hardcoded_secrets",
+        "no_public_s3_buckets",
+        "always_use_orm"
+    ],
+    "forbidden_patterns": [
+        "god_classes",
+        "global_mutable_state",
+        "direct_db_access_from_ui"
+    ]
+}
