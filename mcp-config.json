@@ -1,0 +1,8 @@
+{
+    "mcpServers": {
+        "logic64-kernel": {
+            "url": "http://localhost:3001/sse",
+            "transport": "sse"
+        }
+    }
+}
