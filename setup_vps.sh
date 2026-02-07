@@ -1,28 +1,30 @@
 #!/bin/bash
 
-# logic64 VPS Setup Script
-# Run this on your VPS as root
+# Logic64 VPS Setup Script (v2.0)
+# Run this on your VPS as root: ./setup_vps.sh
 
 set -e
 
-echo ">>> Updating System..."
-apt-get update && apt-get install -y python3 python3-pip python3-venv git
+echo ">>> [1/4] Updating System..."
+apt-get update && apt-get upgrade -y
+apt-get install -y ca-certificates curl gnupg git
 
-PROJECT_ROOT="/root/mcp-logic64"
+echo ">>> [2/4] Installing Docker Engine..."
+if ! command -v docker &> /dev/null; then
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sh get-docker.sh
+    rm get-docker.sh
+    echo "Docker installed successfully."
+else
+    echo "Docker is already installed."
+fi
 
-echo ">>> Setting up MCP-Core..."
-cd "$PROJECT_ROOT/MCP-Core"
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-deactivate
+echo ">>> [3/4] Starting Docker..."
+systemctl enable --now docker
 
-echo ">>> Setting up MCP-Decision-System..."
-cd "$PROJECT_ROOT/MCP-Decision-System"
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-deactivate
+echo ">>> [4/4] Verifying Installation..."
+docker --version
+docker compose version
 
-echo ">>> Setup Complete!"
-echo "You can now run the servers using the start commands."
+echo ">>> SUCCESS: Environment is ready."
+echo "You can now run: docker compose up --build -d"

@@ -3,17 +3,20 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies (incorporating cache)
-COPY package*.json ./
-RUN npm ci
+# Copy Root Configs
+COPY package.json package-lock.json* ./
 
-# Copy Source Code
-COPY tsconfig.json ./
-COPY src ./src
-COPY MCP-Core ./MCP-Core
-COPY MCP-Decision-System ./MCP-Decision-System
+# Copy Kernel Configs
+COPY apps/kernel/package.json ./apps/kernel/
 
-# Build TypeScript
+# Install dependencies
+RUN npm install
+
+# Copy Kernel Source
+COPY apps/kernel ./apps/kernel
+
+# Build Kernel
+WORKDIR /app/apps/kernel
 RUN npm run build
 
 # Runtime Stage
@@ -21,21 +24,20 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy built artifacts and modules
-COPY --from=builder /app/dist ./dist
+# Copy built artifacts
+COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./package.json
-
-# Copy Governance Documentation (Required for Index Law Check)
-# The server checks these paths at runtime to enforce governance.
-COPY --from=builder /app/MCP-Core ./MCP-Core
-COPY --from=builder /app/MCP-Decision-System ./MCP-Decision-System
+COPY --from=builder /app/apps/kernel/package.json ./apps/kernel/
+COPY --from=builder /app/apps/kernel/dist ./apps/kernel/dist
+COPY --from=builder /app/apps/kernel/data ./apps/kernel/data
+COPY --from=builder /app/apps/kernel/node_modules ./apps/kernel/node_modules
 
 # Environment
 ENV NODE_ENV=production
-ENV PORT=3000
-ENV GOVERNANCE_MODE=strict
+ENV PORT=3001
 
-EXPOSE 3000
+EXPOSE 3001
 
-CMD ["npm", "start"]
+# Start the Kernel
+WORKDIR /app/apps/kernel
+CMD ["node", "dist/index.js"]

@@ -1,50 +1,52 @@
-# logic64 VPS Deployment Guide
+# Logic64 VPS Deployment Guide (v2.0)
 
 ## Prerequisites
 *   Ubuntu VPS (22.04 LTS recommended)
-*   Docker & Docker Compose installed
-*   Git (optional, or use SCP)
+*   Root access
 
-## 1. Prepare the Server
-Ensure Docker is running:
-```bash
-sudo apt update
-sudo apt install docker.io docker-compose-v2 -y
-sudo systemctl enable --now docker
-```
+## 1. Setup Environment
+We have provided a script to automatically install Docker and dependencies.
 
-## 2. Transfer Files
-Upload the project to your VPS (e.g., `/opt/logic64`).
-You need:
-*   `src/`
-*   `MCP-Core/`
-*   `MCP-Decision-System/`
-*   `package.json`
-*   `tsconfig.json`
-*   `Dockerfile`
-*   `docker-compose.yml`
+1.  **Pull the latest code**:
+    ```bash
+    git fetch origin && git reset --hard origin/master
+    ```
 
-## 3. Deploy
-Navigate to the directory and run:
+2.  **Run the Setup Script**:
+    ```bash
+    chmod +x setup_vps.sh
+    ./setup_vps.sh
+    ```
+    *This will install Docker and the Docker Compose plugin.*
+
+## 2. Deploy Logic64
+Once the setup is complete, run:
 
 ```bash
-# Build and Start in Background
-docker compose up -d --build
+# Build and Start
+docker compose up --build -d
 
 # View Logs
 docker compose logs -f
 ```
 
-## 4. Verify Governance
-Check the logs. You should see:
-> `SUCCESS: Governance Context Maps loaded. logic64 is GOVERNED.`
+> **Note**: Use `docker compose` (with a space), NOT `docker-compose`.
 
-If you see a CRITICAL error, it means the `MCP-Core` documentation is missing or unreadable.
+## 3. Verify Deployment
+1.  Check if the container is running:
+    ```bash
+    docker ps
+    ```
+    You should see `logic64-kernel` on port `3001`.
 
-## 5. Connecting AI Assistant
-If running locally on the VPS, the AI Assistant can connect via:
-*   **Stdio**: `docker exec -i logic64-core node dist/index.js` (Wrapper needed)
-*   **SSE/HTTP**: `http://localhost:3000/sse` (If SSE is enabled)
+2.  Test the Endpoint:
+    ```bash
+    curl http://localhost:3001/sse
+    ```
 
-> [!NOTE]
-> Currently, the server starts an HTTP listener on Port 3000.
+## 4. Updates
+To update the server after pushing to GitHub:
+```bash
+git pull origin master
+docker compose up --build -d
+```
