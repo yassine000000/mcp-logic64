@@ -15,48 +15,22 @@ We do not manage the conversation; we manage the **State** and **Integrity** of 
 
 ---
 
-## 2. System Components
-The system consists of 4 integrated layers:
+## 2. System Components (Bootstrap Phase)
+For the self-build phase, the system is simplified into a **Single-User MCP Kernel**.
 
-### ❶ The Interaction Layer (Interface)
-**"Multi-Port Access"** - The user chooses the entry point, but the governance remains constant.
+### ❶ The Kernel (Governance Engine)
+**Current Implementation**: `apps/kernel`
+-   **Role**: Enforces architectural rules embedded in `logic64-rules.ts`.
+-   **Mechanism**: Stateless verification of code against hardcoded constraints.
+-   **Interface**: MCP Server connected to Cursor.
 
-*   **A. Cursor / IDE (The Dumb Terminal)**
-    *   Acts as a passive interface for Execution.
-    *   Controlled strictly by the MCP Gateway.
-    *   Injected with `constraints.json` during execution.
-*   **B. Logic64 Web Platform (The Strategic Planner)**
-    *   Advanced GUI for Architect Mode.
-    *   Visual diagrams, corporate templates, and high-level reasoning.
-    *   Syncs directly to the `.logic64/` vault.
+### ❷ The Artifact Vault (Documentation)
+**Current Implementation**: `_archive/MCP-Core/docs`
+-   **Role**: The Source of Truth.
+-   **Access**: Exposed as MCP Resources (`logic64://...`) to the LLM.
 
-### ❷ The Logic64 Gateway (The Engine)
-**"The Keeper of State"** - The central MCP Server acting as the mediator.
+*(Note: The Gateway, Intelligence Nodes, and Hash Locking described below are part of the target v2.0 architecture and are not active in the Bootstrap Kernel.)*
 
-*   **State Machine Manager**: Tracks the current mode (`ARCHITECT`, `LOCKING`, `EXECUTION`).
-*   **Request Routing**: Directs prompts to the appropriate node (Architect vs. Validator) based on the current state.
-*   **Integrity Hashing**:  verifies the `integrity.lock` signature before every single execution step.
-
-### ❸ The Intelligence Nodes (The Brains)
-Specialized AI models invoked by the Gateway for specific purposes.
-
-*   **Architect Node (Backend)**:
-    *   *Type*: High-Reasoning Model (e.g., Claude 3.5 Sonnet, o1).
-    *   *Role*: Analysis, System Design, Option Generation (A/B/C).
-    *   *Permissions*: **Read-Only** (Codebase), **Write** (Documentation/Artifacts).
-*   **Validator Node (Backend)**:
-    *   *Type*: Lightweight/Fast Model (e.g., GPT-4o-mini, Haiku).
-    *   *Role*: Compliance Checking.
-    *   *Output*: Boolean (`PASS`/`FAIL`) checking Code vs. `constraints.json`.
-
-### ❹ The Artifact Vault (The Constitution)
-**"The Single Source of Truth"**
-
-*   **Location**: `.logic64/` directory in the user's project.
-*   **Content**:
-    *   `blueprint.md`: Structural description.
-    *   `constraints.json`: Machine-readable rules.
-    *   `integrity.lock`: Cryptographic seal (SHA-256).
 
 ---
 

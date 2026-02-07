@@ -9,7 +9,7 @@ export const LOGIC64_ARCHITECTURE = {
     project: {
         name: "Logic64",
         version: "1.0.0",
-        description: "SaaS Platform for AI Code Governance via MCP over SSE"
+        description: "SaaS Platform for AI Code Governance. Target Audience: Vibecoders using Cursor & Claude."
     },
 
     stack: {
@@ -21,8 +21,7 @@ export const LOGIC64_ARCHITECTURE = {
         pattern: "Monorepo with Clean Separation",
         structure: {
             studio: "apps/studio - Next.js 14 Web Platform",
-            kernel: "apps/kernel - Hono MCP Server",
-            database: "apps/database - Supabase Schema"
+            kernel: "apps/kernel - Hono MCP Server"
         }
     },
 

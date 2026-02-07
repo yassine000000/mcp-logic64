@@ -12,26 +12,20 @@ create table public.projects (
   name text not null,
   architecture_rules jsonb default '{}'::jsonb, -- The "logic64.json" file
   api_key text not null unique, -- Used by the MCP Kernel for verification
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Indexes for performance
-create index idx_projects_user_id on public.projects(user_id);
-create index idx_projects_api_key on public.projects(api_key);
-
--- RLS Policies (Row Level Security)
+-- RLS Policies
 alter table public.projects enable row level security;
 
--- Policy: Users can only see their own projects
-create policy "Users can view own projects" 
-on public.projects for select 
-using (auth.uid() = user_id);
+create policy "Users can view their own projects"
+  on public.projects for select
+  using (auth.uid() = user_id);
 
-create policy "Users can insert own projects" 
-on public.projects for insert 
-with check (auth.uid() = user_id);
+create policy "Users can insert their own projects"
+  on public.projects for insert
+  with check (auth.uid() = user_id);
 
-create policy "Users can update own projects" 
-on public.projects for update 
-using (auth.uid() = user_id);
+create policy "Users can update their own projects"
+  on public.projects for update
+  using (auth.uid() = user_id);

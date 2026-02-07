@@ -1,122 +1,163 @@
-# logic64 — Platform Concept & Service Flow
+# Logic64: Cloud Architecture Specification (v1.0)
+**Type**: SaaS Platform for AI Code Governance.
+**Target Audience**: Vibecoders using Cursor & Claude.
+**Core Tech**: MCP over SSE (Server-Sent Events).
 
-> **Core Philosophy**: "logic64 is built using the same methodology it enforces on others. No exceptions."
+> **Context**: This document defines the **Target Product (Logic64)** that is being built.
+> The **Builder Tool (mcp-logic64)** is the governance engine used to enforce this specification.
 
-## 0. What logic64 Is
-**logic64 is NOT:**
--   An AI code generator.
--   A Prompt engineering tool.
--   Another collection of MCP servers.
+## 1. نظرة عامة على النظام (System Overview)
+Logic64 هو نظام يتكون من جزأين رئيسيين يعملان بتناغم تام:
 
-**logic64 IS:**
--   A **Control, Governance & Decision-Orchestration Platform**.
--   It sits between human intent and AI execution.
--   It enforces **architectural determinism** in probabilistic systems.
-
-*logic64 does not "help" the LLM; it restricts, guides, and prevents it from deviating.*
+1.  **The Design Studio (logic64.com)**: منصة ويب تستخدم مجلس ذكاء اصطناعي متعدد الوكلاء (Multi-Agent Council) لتصميم معمارية المشروع وتوليد ملف القوانين.
+2.  **The Cloud Kernel (MCP API)**: خادم سحابي يتصل بـ Cursor/Claude مباشرة لتطبيق القوانين التي تم تصميمها في الخطوة الأولى.
 
 ---
 
-## The Execution Flow
+## 2. الوحدة الأولى: منصة التصميم (The Web Studio)
+**المسؤولية**: تحويل "الفكرة" إلى "مخطط هندسي".
 
-### 1. Entry Point — User Enters logic64
-*Logic Moment: Login / Session Start*
--   **Action**: User logs in.
--   **System**: Creates an `Isolated Session` and loads `Tenant-specific Governance Context`.
--   **Constraint**: **No AI interaction before governance context exists.**
+### أ. مجلس الذكاء الاصطناعي (The Council Architecture)
+بدلاً من شات بوت واحد، نستخدم 3 وكلاء (Agents) يتناقشون أمام المستخدم:
 
-### 2. Guided Architectural Reasoning (Human ↔ logic64)
-*Logic Moment: Defining the "Why"*
-The system leads the user through a structured reasoning flow before any code is discussed.
+*   **👷 The Builder (المنشئ)**:
+    *   **Prompt Role**: Senior Software Architect.
+    *   **Goal**: اقتراح الحلول التقنية الأسرع والأحدث.
+    *   **Model**: Claude 3.5 Sonnet.
+*   **🛡️ The Skeptic (المشكك/الحارس)**:
+    *   **Prompt Role**: Security & Scalability Lead.
+    *   **Goal**: نقد اقتراحات المنشئ، البحث عن الثغرات، فرض معايير صارمة.
+    *   **Model**: GPT-4o.
+*   **⚖️ The Moderator (الحكم)**:
+    *   **Prompt Role**: Technical Project Manager.
+    *   **Goal**: تلخيص النقاش، استخراج القرارات النهائية، وتحويلها لـ JSON.
+    *   **Model**: Claude 3 Haiku (للسرعة).
 
-#### 2.1 Problem Definition Layer
--   **Inputs**: "What problem are you solving?", "What must NEVER happen?", "Breakage conditions".
--   **Output**: `Problem Statement Document` (stored in `MCP-Core`).
-
-#### 2.2 Goal & Success Criteria
--   **Separation**: Business Goal vs. Technical Goal vs. Architectural Goal.
--   **Output**: Explicit success boundaries (prevents over-engineering).
-
-#### 2.3 Users & Actors
--   **Defined**: Human Users, System Actors, External Systems, Future AI Agents.
--   **Impact**: Security rules, Tool eligibility, Access control.
-
-### 3. Domain & Use-Case Construction
-*Logic Moment: The "What" (No Code, No Frameworks)*
-
-#### 3.1 Domain Modeling (Textual Only)
--   **Action**: User defines Entities, Invariants, Rules, Forbidden States.
--   **Output**: `Domain Contract` (Readable by MCP-Core).
-
-#### 3.2 Use-Case Mapping
--   **Format**: Verbs (Create X, Approve Y, Reject Z).
--   **Output**: `Use-Case Graph` with Decision Nodes.
-
-### 4. Decision Space Engineering (The Core)
-*Logic Moment: The "How"*
-
-#### 4.1 Decision Classification
-Every decision is classified into:
-1.  **Architectural Decision**
-2.  **Security Decision**
-3.  **Tool Eligibility Decision**
-4.  **Execution Path Decision**
-*Note: The LLM does not own ANY of these decision types.*
-
-#### 4.2 The Dual-Engine Structure
--   **MCP-Core (Governance - The Law)**:
-    -   Defines what is allowed structurally.
-    -   Immutable.
-    -   Fails hard on violations.
--   **MCP-Decision-System (Policy - The Strategy)**:
-    -   Chooses between allowed paths.
-    -   Dynamic, Context-aware.
-
-### 5. Tool Layer Definition
-*Logic Moment: Capability Gating*
-
-#### 5.1 Tool Registry
--   Lists available tools (Perplexity, Context7, APIs, DBs).
--   Defines: Purpose, Data boundaries, Risk profile.
-
-#### 5.2 Tool Activation (Explicit & Audited)
--   User enables a tool -> logic64 creates a **Private Tool Bridge**.
--   **Implication**: No shared tools between tenants. Prevents data leakage.
-
-### 6. Contract Injection
-*Logic Moment: First Contact with LLM*
-Before the LLM receives the prompt, logic64 injects the **Governance Contract** via MCP.
-
-**The Contract States:**
-1.  Who you are (Operator, not Decider).
-2.  What you are NOT allowed to do.
-3.  Which tools are inactive/active.
-4.  When to refresh `MCP-Core` or `MCP-Decision-System`.
-
-### 7. LLM Interaction (Governed Execution)
--   User requests a task.
--   **LLM Behavior**:
-    -   Does NOT decide.
-    -   Does NOT assume.
-    -   Does NOT call tools directly (conceptually).
--   **LLM Action**: Sends a `Request Intent` to logic64.
-
-### 8. Tool Invocation Flow (Indirect, Controlled)
-1.  LLM asks for `Tool X`.
-2.  Request intercepts by `logic64`.
-3.  `logic64` checks `SRCM Matrix` (Responsibility).
-4.  `logic64` consults `MCP-Decision-System`.
-5.  **IF ALLOWED**: logic64 invokes the tool.
-6.  Result returns to logic64 -> then to LLM.
-
-### 9. Continuous Governance
--   Any Code Change -> Re-evaluates decisions.
--   New Tool -> Updates Contract.
--   New Agent -> Subject to same Matrix.
-
-### 10. Final Value
-**logic64 makes the Probability Space smaller.**
-It does not make the LLM smarter; it makes the outcomes **Deterministic**.
+### ب. المخرج (Output)
+عند انتهاء الجلسة، يتم تخزين ملف `logic64.json` في قاعدة البيانات (Supabase) وربطه بـ `Project_ID` و `User_API_Key`.
 
 ---
-*This document defines the architectural invariants for the logic64 self-construction.*
+
+## 3. الوحدة الثانية: النواة السحابية (The Cloud MCP Kernel)
+**المسؤولية**: تنفيذ الحوكمة في الوقت الفعلي (Runtime Enforcement).
+**البروتوكول**: MCP over SSE (Server-Sent Events).
+**لا يوجد تثبيت محلي**. المستخدم يضيف رابط السيرفر فقط في Cursor.
+
+### أ. الأدوات السحابية (Exposed Tools)
+السيرفر يعرض أداتين فقط لـ Claude:
+
+#### 1. `consult_architect`
+*   **الوصف**: تستخدم عندما يريد Claude فهم "كيف" يبني ميزة معينة.
+*   **المدخلات (Input)**: `{ intent: string, context: string }`
+*   **العملية**:
+    1.  استلام النية (مثلاً: "Auth").
+    2.  البحث في `logic64.json` الخاص بالمستخدم.
+    3.  إرجاع القواعد (مثلاً: "Use Supabase Auth, No Custom JWT").
+
+#### 2. `verify_compliance`
+*   **الوصف**: تستخدم لمراجعة الكود قبل عرضه للمستخدم.
+*   **المدخلات (Input)**: `{ code_snippet: string, target_file: string }`
+*   **العملية**:
+    1.  تحليل الكود (Regex/AST parsing خفيف).
+    2.  مقارنته بالقواعد.
+    3.  إرجاع `Approved` أو `Rejected` مع السبب.
+
+---
+
+## 4. هيكلية البيانات (Database Schema)
+نحتاج لقاعدة بيانات علائقية (PostgreSQL via Supabase).
+
+### جدول المشاريع (projects)
+
+| Column | Type | Description |
+| :--- | :--- | :--- |
+| `id` | UUID | معرف المشروع الفريد. |
+| `user_id` | UUID | مالك المشروع. |
+| `name` | String | اسم المشروع (e.g., Uber Clone). |
+| `architecture_rules` | JSONB | ملف القوانين الكامل (ناتج المجلس). |
+| `api_key` | String | المفتاح المستخدم للربط بـ Cursor. |
+
+### هيكل ملف القوانين (`architecture_rules` JSONB)
+```json
+{
+  "stack": ["Next.js", "Supabase", "Tailwind"],
+  "concepts": [
+    {
+      "domain": "Database",
+      "triggers": ["save", "fetch", "query", "sql"],
+      "rules": [
+        "MUST use Supabase JS Client.",
+        "FORBIDDEN to use raw SQL inside components."
+      ]
+    },
+    {
+      "domain": "UI Components",
+      "triggers": ["button", "view", "page"],
+      "rules": [
+        "MUST be functional components.",
+        "Use Tailwind for styling, NO CSS modules."
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## 5. تدفق البيانات (Data Flow Sequence)
+**السيناريو**: المستخدم يكتب `@logic64 أريد صفحة تسجيل دخول`.
+
+1.  **Cursor**: يرى الـ Mention `@logic64`.
+2.  **Cursor**: يفتح اتصال SSE مع `api.logic64.com`.
+3.  **Claude**: يرسل طلب أداة: `consult_architect({ intent: "login page" })`.
+4.  **Logic64 Server**:
+    *   يفحص الـ API Key.
+    *   يجلب قوانين المشروع من Supabase.
+    *   يجد قسم Auth.
+    *   يرد: *"Instructions: Create a form using React Hook Form + Zod. Use Supabase signInWithPassword. Do not use local storage directly."*
+5.  **Claude**: يولد الكود بناءً على التعليمات.
+6.  **Claude (Optional)**: يرسل الكود لـ `verify_compliance`.
+7.  **Logic64 Server**: يوافق ✅.
+8.  **Cursor**: يعرض الكود للمستخدم.
+
+---
+
+## 6. المكدس التقني للتطوير (The Tech Stack)
+
+### Frontend (Web Studio)
+*   **Framework**: Next.js 14 (App Router).
+*   **UI Library**: Shadcn/UI + TailwindCSS.
+*   **AI SDK**: Vercel AI SDK (Core).
+*   **Diagrams**: ReactFlow (لعرض المعمارية بصرياً).
+
+### Backend (Cloud Kernel)
+*   **Runtime**: Node.js (Deployed on Vercel or Railway).
+*   **Framework**: Hono (لأنه يدعم Edge و SSE بشكل ممتاز وخفيف جداً).
+*   **MCP Protocol**: `@modelcontextprotocol/sdk`.
+*   **Database**: Supabase.
+
+---
+
+## 7. خارطة طريق البناء (Implementation Phases)
+
+### المرحلة 1: بناء "المجلس" (Weeks 1-2)
+*   إنشاء واجهة الشات المتعدد (Builder vs Skeptic).
+*   هندسة الـ Prompts لاستخراج JSON دقيق.
+*   تخزين الـ JSON في Supabase.
+
+### المرحلة 2: بناء النواة السحابية (Weeks 2-3)
+*   إعداد Hono Server.
+*   تنفيذ MCP SSE Endpoint.
+*   ربط الـ Endpoint بـ Supabase لقراءة القوانين.
+
+### المرحلة 3: الربط والإطلاق (Week 4)
+*   تجربة الربط مع Cursor فعلياً.
+*   إطلاق الصفحة الرئيسية (Landing Page).
+*   النشر للمجتمع (Vibecoders).
+
+---
+
+## 8. ملاحظات هامة للفريق
+*   **Stateless**: السيرفر السحابي يجب أن يكون عديم الحالة (Stateless). كل طلب يحمل الـ API Key الخاص به.
+*   **Latency**: سرعة الاستجابة حيوية. استخدام Hono + Edge Functions سيضمن استجابة في أقل من 100ms.
+*   **Prompt Engineering**: جودة المنتج تعتمد 90% على جودة الـ System Prompts الخاصة بـ "المجلس". يجب قضاء وقت طويل في تحسينها.

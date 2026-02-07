@@ -25,15 +25,18 @@
 *   **[SRCM.md](./SRCM.md)**
     *   **What**: The Service Responsibility & Control Matrix.
     *   **Why**: **Rule Zero**. Defines strict jurisdiction (Who thinks, who decides, who executes).
-*   **[service_responsibility_matrix.md](./service_responsibility_matrix.md)**
-    *   **What**: Detailed Responsibility Breakdown (Legacy/Detail).
-    *   **Why**: Use SRCM first. This provides deeper detail if needed.
-*   **[service_interaction_sequences.md](./service_interaction_sequences.md)**
-    *   **What**: How components talk.
-    *   **Why**: **No Direct Path** rule. Follow these flows for implementation.
+*   **[decision_system_logic.md](./decision_system_logic.md)**
+    *   **What**: The Decision Engine Logic (Type A vs Type B).
+    *   **Why**: Explains how the "Judge" evaluates code.
+*   **[internal_decisions.md](./internal_decisions.md)**
+    *   **What**: The Architectural Decision Log.
+    *   **Why**: The history of "Why we built it this way".
 *   **[governance_contract.md](./governance_contract.md)**
     *   **What**: The LLM Operational Contract.
     *   **Why**: Defines your role as "Operator", not "Decider".
+*   **[bootstrap_contract.md](./bootstrap_contract.md)**
+    *   **What**: The Bootstrap / Token-Efficiency Protocol.
+    *   **Why**: **READ THIS FIRST** for current session rules.
 *   **[../knowledge/governance_contract_template.md](../knowledge/governance_contract_template.md)**
     *   **What**: The Runtime Execution Law (Injected).
     *   **Why**: The actual text you are bound by during execution.
