@@ -68,7 +68,15 @@ mcp.registerTool("read_specific_spec", {
     inputSchema: zod_1.z.object({
         file_path: zod_1.z.string().describe("The path from the Index (e.g., 'specs/database_rules.md')")
     })
-}, async ({ file_path }) => {
+}, async (args) => {
+    // Manual validation to bypass Zod type inference issues
+    const file_path = args.file_path;
+    if (typeof file_path !== 'string') {
+        return {
+            content: [{ type: "text", text: "❌ ERROR: Invalid input. 'file_path' must be a string." }],
+            isError: true
+        };
+    }
     // Security: Prevent directory traversal
     if (file_path.includes('..') || file_path.startsWith('/') || file_path.includes('\\')) {
         return {
