@@ -30,7 +30,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/kernel/package.json ./apps/kernel/
 COPY --from=builder /app/apps/kernel/dist ./apps/kernel/dist
 COPY --from=builder /app/apps/kernel/data ./apps/kernel/data
-COPY --from=builder /app/apps/kernel/node_modules ./apps/kernel/node_modules
+
 
 # Environment
 ENV NODE_ENV=production

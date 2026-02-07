@@ -45,7 +45,7 @@ mcp.registerTool("get_initial_context",
 
       return {
         content: [{
-          type: "text",
+          type: "text" as const,
           text: `
 === CONTRACT (MUST OBEY) ===
 ${contract}
@@ -60,7 +60,7 @@ ${summary}
       };
     } catch (error) {
       return {
-        content: [{ type: "text", text: `Error loading context: ${error}` }],
+        content: [{ type: "text" as const, text: `Error loading context: ${error}` }],
         isError: true
       };
     }
@@ -74,7 +74,7 @@ mcp.registerTool("read_specific_spec",
     description: "Read a specific technical spec file from the Index.",
     inputSchema: z.object({
       file_path: z.string().describe("The path from the Index (e.g., 'specs/database_rules.md')")
-    })
+    }) as any
   },
   async (args: any) => {
     // Manual validation to bypass Zod type inference issues
@@ -82,7 +82,7 @@ mcp.registerTool("read_specific_spec",
 
     if (typeof file_path !== 'string') {
       return {
-        content: [{ type: "text", text: "❌ ERROR: Invalid input. 'file_path' must be a string." }],
+        content: [{ type: "text" as const, text: "❌ ERROR: Invalid input. 'file_path' must be a string." }],
         isError: true
       };
     }
@@ -90,7 +90,7 @@ mcp.registerTool("read_specific_spec",
     // Security: Prevent directory traversal
     if (file_path.includes('..') || file_path.startsWith('/') || file_path.includes('\\')) {
       return {
-        content: [{ type: "text", text: "❌ ACCESS DENIED: Invalid path." }],
+        content: [{ type: "text" as const, text: "❌ ACCESS DENIED: Invalid path." }],
         isError: true
       };
     }
@@ -99,21 +99,21 @@ mcp.registerTool("read_specific_spec",
     const fullPath = resolve(DATA_ROOT, file_path);
     if (!fullPath.startsWith(resolve(DATA_ROOT))) {
       return {
-        content: [{ type: "text", text: "❌ ACCESS DENIED: Path traversal detected." }],
+        content: [{ type: "text" as const, text: "❌ ACCESS DENIED: Path traversal detected." }],
         isError: true
       };
     }
 
     if (!existsSync(fullPath)) {
       return {
-        content: [{ type: "text", text: `❌ ERROR: File '${file_path}' not found.` }],
+        content: [{ type: "text" as const, text: `❌ ERROR: File '${file_path}' not found.` }],
         isError: true
       };
     }
 
     const content = readFileSync(fullPath, 'utf-8');
     return {
-      content: [{ type: "text", text: content }]
+      content: [{ type: "text" as const, text: content }]
     };
   }
 );
