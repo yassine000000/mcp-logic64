@@ -8,6 +8,7 @@ const hono_1 = require("hono");
 const cors_1 = require("hono/cors");
 const streaming_1 = require("hono/streaming");
 const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
+const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const zod_1 = require("zod");
 const crypto_1 = require("crypto");
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -169,9 +170,20 @@ app.post('/messages', async (c) => {
     return c.text('Accepted');
 });
 // --- Start Server ---
-const port = 3001;
-console.log(`Logic64 Builder Server running on port ${port}`);
-(0, node_server_1.serve)({
-    fetch: app.fetch,
-    port
-});
+const isStdio = process.argv.includes('--stdio');
+if (isStdio) {
+    console.error("Starting Logic64 Builder in Stdio mode...");
+    const transport = new stdio_js_1.StdioServerTransport();
+    mcp.connect(transport).catch(err => {
+        console.error("Error connecting to Stdio transport:", err);
+        process.exit(1);
+    });
+}
+else {
+    const port = 3001;
+    console.log(`Logic64 Builder Server running on port ${port}`);
+    (0, node_server_1.serve)({
+        fetch: app.fetch,
+        port
+    });
+}
