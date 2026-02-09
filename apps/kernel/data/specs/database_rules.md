@@ -1,20 +1,22 @@
-# Database & Auth Rules (Supabase)
+# Database Rules (Neon & Drizzle)
 
 ## 1. The Stack
-- **Database**: PostgreSQL (via Supabase).
-- **Auth**: Supabase Auth (GoTrue).
-- **Client**: `@supabase/supabase-js`.
+- **Database**: Neon (Serverless PostgreSQL).
+- **ORM**: Drizzle ORM.
+- **Driver**: `@neondatabase/serverless`.
+- **Migrations**: Drizzle Kit.
 
 ## 2. Schema Management
-- **Source of Truth**: `apps/database/schema.sql`.
-- **Migrations**: Manual SQL execution (for v1.0).
-- **Keys**: Primary Keys must be `UUID` (`uuid_generate_v4()`).
+- **Source of Truth**: TypeScript Schema (`schema.ts`).
+- **Migrations**: Automated via `drizzle-kit push` or `generate`.
+- **Keys**: Use UUIDs for all primary keys (`uuid()`).
 
-## 3. Security (RLS)
-- **Mandatory**: RLS (Row Level Security) MUST be enabled on ALL tables.
-- **Policy Pattern**: `auth.uid() = user_id`.
-- **Forbidden**: Never use `service_role` key in client-side code (`apps/studio`).
+## 3. Connection & Security
+- **Connection String**: stored in `DATABASE_URL` (Env Variable).
+- **Pooling**: Use Neon's connection pooling for serverless environments.
+- **Edge Compatibility**: Must use the serverless driver for Edge functions (Hono/Next.js).
 
-## 4. Querying
-- Use the JS Client: `await supabase.from('projects').select('*')`.
-- **Prohibited**: Raw SQL strings in TypeScript code (SQL Injection risk).
+## 4. Querying Pattern
+- **Style**: Functional, type-safe queries.
+- **Example**: `await db.select().from(projects).where(eq(projects.id, id))`.
+- **Prohibited**: Raw SQL strings (unless absolutely necessary for complex CTEs).
