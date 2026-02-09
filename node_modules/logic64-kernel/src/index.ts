@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { streamText } from 'hono/streaming'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
 import { randomUUID } from 'crypto'
 import dotenv from 'dotenv'
@@ -208,10 +209,21 @@ app.post('/messages', async (c) => {
 
 // --- Start Server ---
 
-const port = 3001;
-console.log(`Logic64 Builder Server running on port ${port}`);
+const isStdio = process.argv.includes('--stdio');
 
-serve({
-  fetch: app.fetch,
-  port
-});
+if (isStdio) {
+  console.error("Starting Logic64 Builder in Stdio mode...");
+  const transport = new StdioServerTransport();
+  mcp.connect(transport).catch(err => {
+    console.error("Error connecting to Stdio transport:", err);
+    process.exit(1);
+  });
+} else {
+  const port = 3001;
+  console.log(`Logic64 Builder Server running on port ${port}`);
+
+  serve({
+    fetch: app.fetch,
+    port
+  });
+}
