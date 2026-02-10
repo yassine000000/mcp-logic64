@@ -212,7 +212,7 @@ app.post('/messages', async (c) => {
 const isStdio = process.argv.includes('--stdio');
 
 if (isStdio) {
-  console.error("Starting Logic64 Builder in Stdio mode...");
+  // console.error("Starting Logic64 Builder in Stdio mode...");
   const transport = new StdioServerTransport();
   mcp.connect(transport).catch(err => {
     console.error("Error connecting to Stdio transport:", err);
