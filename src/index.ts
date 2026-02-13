@@ -10,7 +10,7 @@ import { randomUUID } from 'crypto'
 import dotenv from 'dotenv'
 import { readFileSync, existsSync, readdirSync } from 'fs'
 import { join } from 'path'
-import { LOGIC64_ARCHITECTURE } from './constants/architecture.js'
+import { LOGIC64_ARCHITECTURE } from './constants/architecture'
 
 dotenv.config();
 
@@ -22,6 +22,9 @@ const mcp = new McpServer({
   name: "Logic64 Cortex Kernel",
   version: "3.0.0"
 })
+
+// Wrapper to bypass TS2589 deep type instantiation in MCP SDK generics
+const registerTool: (...args: any[]) => any = mcp.tool.bind(mcp);
 
 // --- Data Paths & State ---
 // Using process.cwd() assumes you run 'npm run dev' from apps/kernel
@@ -53,9 +56,14 @@ function getArchitectureState() {
 // --- MCP Tools Implementation ---
 
 // 1. Tool: get_initial_context (The Handshake)
-mcp.tool("get_initial_context",
-  { project_api_key: z.string().describe("Project API Key from .env") },
-  async ({ project_api_key }) => {
+const GetInitialContextSchema = {
+  project_api_key: z.string().describe("Project API Key from .env")
+};
+
+registerTool("get_initial_context",
+  GetInitialContextSchema,
+  async (args: { project_api_key: string }) => {
+    const { project_api_key } = args;
     // 1. Validate Key (Mock)
     if (!project_api_key) return { isError: true, content: [{ type: "text", text: "Missing API Key" }] };
 
@@ -76,12 +84,16 @@ mcp.tool("get_initial_context",
 
 // 2. Tool: ask_cortex (The Brain)
 // This is where the Hybrid Logic lives
-mcp.tool("ask_cortex",
-  {
-    intent: z.string().describe("What you want to build"),
-    current_file: z.string().optional()
-  },
-  async ({ intent, current_file }) => {
+const AskCortexSchema = {
+  intent: z.string().describe("What you want to build"),
+  current_file: z.string().optional()
+};
+
+registerTool("ask_cortex",
+  AskCortexSchema,
+  async (args: { intent: string; current_file?: string }) => {
+    const { intent, current_file } = args;
+
 
     // ---------------------------------------------------------
     // LAYER A: The Deterministic Resolver (Code-Based Check) 🛡️
@@ -133,11 +145,15 @@ mcp.tool("ask_cortex",
     if (current_file) cortexContext += `Context: ${current_file}\n`;
 
     // Load Cortex Logic
-    const engineLogic = readFileSync(join(PATHS.LAYERS.architecture, 'cortex_engine.md'), 'utf-8');
+    const enginePath = join(PATHS.LAYERS.architecture, 'cortex_engine.md');
+    if (!existsSync(enginePath)) throw new Error("Missing Cortex Engine Definition");
+    const engineLogic = readFileSync(enginePath, 'utf-8');
     cortexContext += `\n=== ENGINE LOGIC ===\n${engineLogic}\n`;
 
     // Load Execution Rules
-    const execRules = readFileSync(join(PATHS.LAYERS.domains, 'kernel_execution.md'), 'utf-8');
+    const execPath = join(PATHS.LAYERS.domains, 'kernel_execution.md');
+    if (!existsSync(execPath)) throw new Error("Missing Execution Rules");
+    const execRules = readFileSync(execPath, 'utf-8');
     cortexContext += `\n=== EXECUTION RULES ===\n${execRules}\n`;
 
     // Load SAM (State) if available
@@ -155,11 +171,14 @@ mcp.tool("ask_cortex",
 );
 
 // 3. Tool: consult_documentation (The Librarian)
-mcp.tool("consult_documentation",
-  {
-    node_id: z.enum(['governance', 'standards', 'system_context', 'db_schema', 'mcp_tools'])
-  },
-  async ({ node_id }) => {
+const ConsultDocumentationSchema = {
+  node_id: z.enum(['governance', 'standards', 'system_context', 'db_schema', 'mcp_tools'])
+};
+
+registerTool("consult_documentation",
+  ConsultDocumentationSchema,
+  async (args: { node_id: 'governance' | 'standards' | 'system_context' | 'db_schema' | 'mcp_tools' }) => {
+    const { node_id } = args;
     // Map IDs to file paths
     const map: Record<string, string> = {
       'governance': join(PATHS.LAYERS.principles, 'governance_rules.md'),

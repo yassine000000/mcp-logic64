@@ -3,3 +3,7 @@ apps/*/node_modules
 apps/*/dist
 .git
 .env
+.DS_Store
+npm-debug.log
+coverage
+dist
