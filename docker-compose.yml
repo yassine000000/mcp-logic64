@@ -12,7 +12,7 @@ services:
       - MCP_SERVER_NAME=logic64-builder
     volumes:
       # Mount the Knowledge Base (Contract & Index) for live updates
-      - ./apps/kernel/data:/app/apps/kernel/data
+      - ./data:/app/data
     restart: unless-stopped
     networks:
       - logic64-net

@@ -1,0 +1,115 @@
+{
+    "system_profile": {
+        "name": "Logic64 SaaS Platform",
+        "version": "3.0.0 (The Cortex Edition)",
+        "classification": "Global System Architecture",
+        "philosophy": "Design First, Code Later.",
+        "core_mission": "To enforce architectural governance via a Hybrid Cortex Engine, preventing unstructured code generation."
+    },
+    "tech_stack": {
+        "monorepo_manager": "TurboRepo",
+        "package_manager": "pnpm",
+        "frontend": {
+            "framework": "Next.js 14 (App Router)",
+            "language": "TypeScript",
+            "styling": "Tailwind CSS + Shadcn/UI",
+            "state_management": "React Server Components (RSC) + Server Actions"
+        },
+        "backend": {
+            "runtime": "Node.js (v20+)",
+            "framework": "Hono (Edge Compatible Adapter)",
+            "protocol": "Model Context Protocol (MCP) over SSE"
+        },
+        "database": {
+            "provider": "Supabase",
+            "engine": "PostgreSQL",
+            "orm": "None (Direct SQL via Supabase JS Client for performance)",
+            "security": "Row Level Security (RLS) is MANDATORY"
+        },
+        "ai_engine": {
+            "framework": "Vercel AI SDK (Core)",
+            "model_provider": "OpenAI / Anthropic"
+        }
+    },
+    "knowledge_index": {
+        "description": "Map of the documentation vault. AI must read specific nodes based on the user's intent.",
+        "layers": {
+            "layer_0_principles": {
+                "description": "Non-negotiable rules for coding and governance.",
+                "files": [
+                    {
+                        "id": "governance",
+                        "path": "00_principles/governance_rules.md",
+                        "summary": "The 'Design First' rule and Token Efficiency Protocol."
+                    },
+                    {
+                        "id": "standards",
+                        "path": "00_principles/coding_standards.md",
+                        "summary": "Naming conventions, file structure, and error handling patterns."
+                    }
+                ]
+            },
+            "layer_1_architecture": {
+                "description": "High-level system design and component interaction (C4 Model).",
+                "files": [
+                    {
+                        "id": "system_context",
+                        "path": "01_architecture/system_context.md",
+                        "summary": "Relationship between Studio (Design) and Kernel (Runtime)."
+                    },
+                    {
+                        "id": "cortex_logic",
+                        "path": "01_architecture/cortex_engine.md",
+                        "summary": "How the Hybrid Engine converts Intents into Blueprints."
+                    }
+                ]
+            },
+            "layer_2_domains": {
+                "description": "Business logic and workflow definitions.",
+                "files": [
+                    {
+                        "id": "studio_council",
+                        "path": "02_domains/studio_council.md",
+                        "summary": "The Multi-Agent Council workflow (Builder, Critic, Moderator)."
+                    },
+                    {
+                        "id": "kernel_execution",
+                        "path": "02_domains/kernel_execution.md",
+                        "summary": "The Intent-to-Blueprint execution loop."
+                    }
+                ]
+            },
+            "layer_3_data": {
+                "description": "Data models and memory structures.",
+                "files": [
+                    {
+                        "id": "sam_structure",
+                        "path": "03_data/sam_structure.md",
+                        "summary": "Schema for logic64-state.json (The Project Memory)."
+                    },
+                    {
+                        "id": "db_schema",
+                        "path": "03_data/database_schema.md",
+                        "summary": "Core Supabase tables (projects, users, logs)."
+                    }
+                ]
+            },
+            "layer_4_api": {
+                "description": "Interface definitions for MCP tools.",
+                "files": [
+                    {
+                        "id": "mcp_tools",
+                        "path": "04_api/mcp_tools.md",
+                        "summary": "Specs for 'ask_cortex' and 'read_project_manifest' tools."
+                    }
+                ]
+            }
+        }
+    },
+    "governance_directives": [
+        "DO NOT generate code without a Cortex Blueprint.",
+        "DO NOT guess database schema; consult 'logic64-state.json'.",
+        "ALWAYS prefer Server Actions over API Routes for Next.js mutations.",
+        "ALWAYS enforce RLS policies on new tables."
+    ]
+}
